@@ -1,5 +1,6 @@
 import Table from 'react-bootstrap/Table';
 import MsgItem from '../components/MsgItem.js';
+import NewMessageForm from '../components/NewMessageForm.js'
 
 const MsgBoard=()=>{
   const messages=[
@@ -11,6 +12,8 @@ const MsgBoard=()=>{
     {id:5, Name:"Sarah",msgText:"I heart React"}
   ]
   return(
+     <>
+      <NewMessageForm ></NewMessageForm >
   <Table striped bordered hover> 
     <thead>
       <tr>
@@ -23,6 +26,8 @@ const MsgBoard=()=>{
         {messages.map(msg =><MsgItem key={msg.id}{...msg} />)}
       </tbody>
     </Table>
+   
+    </>
 );
 }
 
