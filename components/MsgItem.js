@@ -1,9 +1,9 @@
-const MsgItem=({id,Name,msgText})=>(
+const MsgItem=({id,name,msgText,msgNum})=>(
   <tr>
-    <td>{id+1}</td>
-    <td>{Name}</td>
+    <td>{msgNum}</td>
+    <td>{name}</td>
     <td>{msgText}</td>
-  </tr>
+  </tr> 
 );
 
 export default MsgItem;
