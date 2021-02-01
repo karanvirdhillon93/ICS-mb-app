@@ -11,9 +11,17 @@ const MsgBoard=()=>{
     {id:4, Name:"Frank",msgText:"Who's tired?"},
     {id:5, Name:"Sarah",msgText:"I heart React"}
   ]
+  // handler for submission of Form in
+  // NewMessageForm Component
+  const addNewMessage = (values) => {
+    console.log(values);
+    values.id = messages.length;
+    messages.unshift(values);
+    console.log(messages);
+  }
   return(
-     <>
-      <NewMessageForm ></NewMessageForm >
+    <>
+    <NewMessageForm addNewMessage={addNewMessage} />
   <Table striped bordered hover> 
     <thead>
       <tr>
