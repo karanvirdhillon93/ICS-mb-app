@@ -1,0 +1,378 @@
+[1mdiff --git a/components/MsgBoard.js b/components/MsgBoard.js[m
+[1mindex 09f429d..be5f87e 100644[m
+[1m--- a/components/MsgBoard.js[m
+[1m+++ b/components/MsgBoard.js[m
+[36m@@ -1,8 +1,10 @@[m
+ import Table from 'react-bootstrap/Table';[m
+ import MsgItem from '../components/MsgItem.js';[m
+[32m+[m[32mimport NewMessageForm from '../components/NewMessageForm.js'[m
+[32m+[m[32mimport { useState } from 'react';[m
+ [m
+ const MsgBoard=()=>{[m
+[31m-  const messages=[[m
+[32m+[m[32m /* const messages=[[m
+     {id:0, Name:"Bill",msgText:"Hi All!"},[m
+     {id:1, Name:"Ann",msgText:"ICS 211 is fun!"},[m
+     {id:2, Name:"Johnny",msgText:"I'm stranded !"},[m
+[36m@@ -10,20 +12,46 @@[m [mconst MsgBoard=()=>{[m
+     {id:4, Name:"Frank",msgText:"Who's tired?"},[m
+     {id:5, Name:"Sarah",msgText:"I heart React"}[m
+   ][m
+[31m-  return([m
+[31m-  <Table striped bordered hover> [m
+[31m-    <thead>[m
+[31m-      <tr>[m
+[31m-        <th>#</th>[m
+[31m-        <th>Name</th>[m
+[31m-        <th>Message</th>[m
+[31m-      </tr>[m
+[31m-    </thead>[m
+[31m-      <tbody>   [m
+[31m-        {messages.map(msg =><MsgItem key={msg.id}{...msg} />)}[m
+[31m-      </tbody>[m
+[31m-    </Table>[m
+[31m-);[m
+[32m+[m[32m*/[m
+[32m+[m[32m  let [messages,setMessages]=useState([[m
+[32m+[m[32m    {id:0, name:"Bill",msgText:"Hi All!"},[m
+[32m+[m[32m    {id:1, name:"Ann",msgText:"ICS 211 is fun!"},[m
+[32m+[m[32m    {id:2, name:"Johnny",msgText:"I'm stranded !"},[m
+[32m+[m[32m    {id:3, name:"Barb",msgText:"Hi"},[m
+[32m+[m[32m    {id:4, name:"Frank",msgText:"Who's tired?"},[m
+[32m+[m[32m    {id:5, name:"Sarah",msgText:"I heart React"}[m
+[32m+[m[32m  ])[m
+[32m+[m[32m  // handler for submission of Form in[m
+[32m+[m[32m  // NewMessageForm Component[m
+[32m+[m[41m [m
+[32m+[m
+[32m+[m[32m  const addNewMessage = (values) => {[m
+[32m+[m[32m    console.log(values);[m
+[32m+[m[32m    values.id = messages.length;[m
+[32m+[m[32m    //messages.unshift(values);[m
+[32m+[m[32m    console.log(messages);[m
+[32m+[m[32m    setMessages( [values, ...messages] );[m
+[32m+[m[32m    console.log(messages);[m
+[32m+[m[32m  }[m
+[32m+[m[32m    return([m
+[32m+[m[32m      <>[m
+[32m+[m[32m      <NewMessageForm addNewMessage={addNewMessage} />[m
+[32m+[m[32m        <Table striped bordered hover>[m[41m [m
+[32m+[m[32m          <thead>[m
+[32m+[m[32m            <tr>[m
+[32m+[m[32m              <th>#</th>[m
+[32m+[m[32m              <th>Name</th>[m
+[32m+[m[32m              <th>Message</th>[m
+[32m+[m[32m            </tr>[m
+[32m+[m[32m          </thead>[m
+[32m+[m[32m          <tbody>[m[41m   [m
+[32m+[m[32m          {messages.map( (message, index) =>[m
+[32m+[m[32m <MsgItem key={ message.id } {...message} msgNum={index+1} />[m
+[32m+[m[32m)}[m
+[32m+[m[32m          </tbody>[m
+[32m+[m[32m        </Table>[m
+[32m+[m[32m      </>[m
+[32m+[m[32m    );[m
+ }[m
+ [m
+ export default MsgBoard;[m
+\ No newline at end of file[m
+[1mdiff --git a/components/MsgItem.js b/components/MsgItem.js[m
+[1mindex f11b2f5..2cbf385 100644[m
+[1m--- a/components/MsgItem.js[m
+[1m+++ b/components/MsgItem.js[m
+[36m@@ -1,9 +1,9 @@[m
+[31m-const MsgItem=({id,Name,msgText})=>([m
+[32m+[m[32mconst MsgItem=({id,name,msgText,msgNum})=>([m
+   <tr>[m
+[31m-    <td>{id+1}</td>[m
+[31m-    <td>{Name}</td>[m
+[32m+[m[32m    <td>{msgNum}</td>[m
+[32m+[m[32m    <td>{name}</td>[m
+     <td>{msgText}</td>[m
+[31m-  </tr>[m
+[32m+[m[32m  </tr>[m[41m [m
+ );[m
+ [m
+ export default MsgItem;[m
+\ No newline at end of file[m
+[1mdiff --git a/components/NewMessageForm.js b/components/NewMessageForm.js[m
+[1mnew file mode 100644[m
+[1mindex 0000000..1306b56[m
+[1m--- /dev/null[m
+[1m+++ b/components/NewMessageForm.js[m
+[36m@@ -0,0 +1,99 @@[m
+[32m+[m[32mimport { Button, Card, Col, Form, Row } from 'react-bootstrap';[m
+[32m+[m[32mimport { Formik } from 'formik';[m
+[32m+[m[32mimport * as yup from "yup";[m
+[32m+[m
+[32m+[m[32mconst schema = yup.object().shape({[m
+[32m+[m[32m  name: yup[m
+[32m+[m[32m    .string()[m
+[32m+[m[32m    .trim()[m
+[32m+[m[32m    .min(2, 'Your name must be at least ${min} characters.')[m
+[32m+[m[32m    .max(15, 'Your name cannot be more than ${max} characters.')[m
+[32m+[m[32m    .matches(/[A-Za-z]/, 'Invalid name. Use Upper and Lowercase letters only.')[m
+[32m+[m[32m    .required('Your name is required.'),[m
+[32m+[m[32m  msgText: yup[m
+[32m+[m[32m    .string()[m
+[32m+[m[32m    .trim()[m
+[32m+[m[32m    .min(2, 'Your message must be at least ${min} characters.')[m
+[32m+[m[32m    .max(30, 'Your message must be no more than ${max} characters')[m
+[32m+[m[32m    .required('A message is required.')[m
+[32m+[m[32m});[m
+[32m+[m
+[32m+[m[32mconst NewMessageForm = ({ addNewMessage }) => {[m
+[32m+[m[41m  [m
+[32m+[m[32m  const handleFormData = ( values, { resetForm, setSubmitting }) => {[m
+[32m+[m[32m      /* addNewMessage(values)[m
+[32m+[m[32m     * This is a function that needs to be passed to[m[41m [m
+[32m+[m[32m     * this Component and implemented in the Parent.[m
+[32m+[m[32m     * values will contain the data this Component[m[41m [m
+[32m+[m[32m     * collected from the Form and will be passed to[m
+[32m+[m[32m     * the Parent Component via this function.[m
+[32m+[m[32m     */[m
+[32m+[m[32m    addNewMessage(values);[m
+[32m+[m[32m    // reset the Form to prevent a double submit[m
+[32m+[m[32m    resetForm();[m
+[32m+[m[32m    // sets isSubmitting to false to finish submission[m
+[32m+[m[32m    setSubmitting(false);[m
+[32m+[m[32m  }[m
+[32m+[m[41m  [m
+[32m+[m[32m  return ([m
+[32m+[m[32m    <Card className="mb-4">[m
+[32m+[m[32m      <Card.Body>[m
+[32m+[m[32m        <Card.Title>Add a Message:</Card.Title>[m
+[32m+[m[32m        <Formik[m
+[32m+[m[32m          validationSchema={schema}[m
+[32m+[m[32m          onSubmit={handleFormData}[m
+[32m+[m[32m          initialValues={{ name: '', msgText: '' }}[m
+[32m+[m[32m        >[m
+[32m+[m[32m          {({[m
+[32m+[m[32m            handleSubmit,[m
+[32m+[m[32m            handleChange,[m
+[32m+[m[32m            handleBlur,[m
+[32m+[m[32m            values,[m
+[32m+[m[32m            touched,[m
+[32m+[m[32m            errors[m
+[32m+[m[32m          }) => ([m
+[32m+[m[32m            <Form noValidate onSubmit={handleSubmit}>[m
+[32m+[m[32m              <Row className="align-items-center">[m
+[32m+[m[32m                <Form.Group as={Col} controlId="name">[m
+[32m+[m[32m                  <Form.Label>Enter a Name:</Form.Label>[m
+[32m+[m[32m                  <Form.Control[m
+[32m+[m[32m                    placeholder="Your name"[m
+[32m+[m[32m                    value={values.name}[m
+[32m+[m[32m                    onChange={handleChange}[m
+[32m+[m[32m                    onBlur={handleBlur}[m
+[32m+[m[32m                    isValid={touched.name && !errors.name}[m
+[32m+[m[32m                    isInvalid={touched.name && errors.name}[m
+[32m+[m[32m                  />[m
+[32m+[m[32m                  <Form.Control.Feedback type="invalid">[m
+[32m+[m[32m                    {errors.name}[m
+[32m+[m[32m                  </Form.Control.Feedback>[m
+[32m+[m[32m                </Form.Group>[m
+[32m+[m[32m                <Form.Group as={Col} md={6} controlId="msgText">[m
+[32m+[m[32m                  <Form.Label>Enter Message:</Form.Label>[m
+[32m+[m[32m                  <Form.Control[m
+[32m+[m[32m                    placeholder="Your message"[m
+[32m+[m[32m                    value={values.msgText}[m
+[32m+[m[32m                    onChange={handleChange}[m
+[32m+[m[32m                    onBlur={handleBlur}[m
+[32m+[m[32m                    isValid={touched.msgText && !errors.msgText}[m
+[32m+[m[32m                    isInvalid={touched.msgText && errors.msgText}[m
+[32m+[m[32m                  />[m
+[32m+[m[32m                  <Form.Control.Feedback type="invalid">[m
+[32m+[m[32m                    {errors.messageText}[m
+[32m+[m[32m                  </Form.Control.Feedback>[m
+[32m+[m[32m                </Form.Group>[m
+[32m+[m[32m                <Col>[m
+[32m+[m[32m                  <Button variant="primary" type="submit" className="mt-3">[m
+[32m+[m[32m                    Submit[m
+[32m+[m[32m                  </Button>[m
+[32m+[m[32m                </Col>[m
+[32m+[m[32m              </Row>[m
+[32m+[m[32m            </Form>[m
+[32m+[m[32m          )}[m
+[32m+[m[32m        </Formik>[m
+[32m+[m[32m      </Card.Body>[m
+[32m+[m[32m    </Card>[m
+[32m+[m[32m  );[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32mexport default NewMessageForm;[m
+[1mdiff --git a/package-lock.json b/package-lock.json[m
+[1mindex 3b1bb98..e472003 100644[m
+[1m--- a/package-lock.json[m
+[1m+++ b/package-lock.json[m
+[36m@@ -271,6 +271,11 @@[m
+       "resolved": "https://registry.npmjs.org/@types/invariant/-/invariant-2.2.34.tgz",[m
+       "integrity": "sha512-lYUtmJ9BqUN688fGY1U1HZoWT1/Jrmgigx2loq4ZcJpICECm/Om3V314BxdzypO0u5PORKGMM6x0OXaljV1YFg=="[m
+     },[m
+[32m+[m[32m    "@types/lodash": {[m
+[32m+[m[32m      "version": "4.14.168",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/@types/lodash/-/lodash-4.14.168.tgz",[m
+[32m+[m[32m      "integrity": "sha512-oVfRvqHV/V6D1yifJbVRU3TMp8OT6o6BG+U9MkwuJ3U8/CsDHvalRpsxBqivn71ztOFZBTfJMvETbqHiaNSj7Q=="[m
+[32m+[m[32m    },[m
+     "@types/prop-types": {[m
+       "version": "15.7.3",[m
+       "resolved": "https://registry.npmjs.org/@types/prop-types/-/prop-types-15.7.3.tgz",[m
+[36m@@ -910,6 +915,11 @@[m
+       "integrity": "sha512-LOHxIOaPYdHlJRtCQfDIVZtfw/ufM8+rVj649RIHzcm/vGwQRXFt6OPqIFWsm2XEMrNIEtWR64sY1LEKD2vAOA==",[m
+       "optional": true[m
+     },[m
+[32m+[m[32m    "deepmerge": {[m
+[32m+[m[32m      "version": "2.2.1",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/deepmerge/-/deepmerge-2.2.1.tgz",[m
+[32m+[m[32m      "integrity": "sha512-R9hc1Xa/NOBi9WRVUWg19rl1UB7Tt4kuPd+thNJgFZoxXsTz7ncaPaeIm+40oSGuP33DfMb4sZt1QIGiJzC4EA=="[m
+[32m+[m[32m    },[m
+     "delegates": {[m
+       "version": "1.0.0",[m
+       "resolved": "https://registry.npmjs.org/delegates/-/delegates-1.0.0.tgz",[m
+[36m@@ -1117,6 +1127,20 @@[m
+         "path-exists": "^4.0.0"[m
+       }[m
+     },[m
+[32m+[m[32m    "formik": {[m
+[32m+[m[32m      "version": "2.2.6",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/formik/-/formik-2.2.6.tgz",[m
+[32m+[m[32m      "integrity": "sha512-Kxk2zQRafy56zhLmrzcbryUpMBvT0tal5IvcifK5+4YNGelKsnrODFJ0sZQRMQboblWNym4lAW3bt+tf2vApSA==",[m
+[32m+[m[32m      "requires": {[m
+[32m+[m[32m        "deepmerge": "^2.1.1",[m
+[32m+[m[32m        "hoist-non-react-statics": "^3.3.0",[m
+[32m+[m[32m        "lodash": "^4.17.14",[m
+[32m+[m[32m        "lodash-es": "^4.17.14",[m
+[32m+[m[32m        "react-fast-compare": "^2.0.1",[m
+[32m+[m[32m        "tiny-warning": "^1.0.2",[m
+[32m+[m[32m        "tslib": "^1.10.0"[m
+[32m+[m[32m      }[m
+[32m+[m[32m    },[m
+     "fs-constants": {[m
+       "version": "1.0.0",[m
+       "resolved": "https://registry.npmjs.org/fs-constants/-/fs-constants-1.0.0.tgz",[m
+[36m@@ -1231,6 +1255,14 @@[m
+         "minimalistic-crypto-utils": "^1.0.1"[m
+       }[m
+     },[m
+[32m+[m[32m    "hoist-non-react-statics": {[m
+[32m+[m[32m      "version": "3.3.2",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/hoist-non-react-statics/-/hoist-non-react-statics-3.3.2.tgz",[m
+[32m+[m[32m      "integrity": "sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==",[m
+[32m+[m[32m      "requires": {[m
+[32m+[m[32m        "react-is": "^16.7.0"[m
+[32m+[m[32m      }[m
+[32m+[m[32m    },[m
+     "htmlparser2": {[m
+       "version": "5.0.1",[m
+       "resolved": "https://registry.npmjs.org/htmlparser2/-/htmlparser2-5.0.1.tgz",[m
+[36m@@ -1510,6 +1542,11 @@[m
+       "resolved": "https://registry.npmjs.org/ms/-/ms-2.1.2.tgz",[m
+       "integrity": "sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w=="[m
+     },[m
+[32m+[m[32m    "nanoclone": {[m
+[32m+[m[32m      "version": "0.2.1",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/nanoclone/-/nanoclone-0.2.1.tgz",[m
+[32m+[m[32m      "integrity": "sha512-wynEP02LmIbLpcYw8uBKpcfF6dmg2vcpKqxeH5UcoKEYdExslsdUA4ugFauuaeYdTB76ez6gJW8XAZ6CgkXYxA=="[m
+[32m+[m[32m    },[m
+     "nanoid": {[m
+       "version": "3.1.20",[m
+       "resolved": "https://registry.npmjs.org/nanoid/-/nanoid-3.1.20.tgz",[m
+[36m@@ -1955,6 +1992,11 @@[m
+         "warning": "^4.0.0"[m
+       }[m
+     },[m
+[32m+[m[32m    "property-expr": {[m
+[32m+[m[32m      "version": "2.0.4",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/property-expr/-/property-expr-2.0.4.tgz",[m
+[32m+[m[32m      "integrity": "sha512-sFPkHQjVKheDNnPvotjQmm3KD3uk1fWKUN7CrpdbwmUx3CrG3QiM8QpTSimvig5vTXmTvjz7+TDvXOI9+4rkcg=="[m
+[32m+[m[32m    },[m
+     "public-encrypt": {[m
+       "version": "4.0.3",[m
+       "resolved": "https://registry.npmjs.org/public-encrypt/-/public-encrypt-4.0.3.tgz",[m
+[36m@@ -2084,6 +2126,11 @@[m
+         "scheduler": "^0.20.1"[m
+       }[m
+     },[m
+[32m+[m[32m    "react-fast-compare": {[m
+[32m+[m[32m      "version": "2.0.4",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/react-fast-compare/-/react-fast-compare-2.0.4.tgz",[m
+[32m+[m[32m      "integrity": "sha512-suNP+J1VU1MWFKcyt7RtjiSWUjvidmQSlqu+eHslq+342xCbGTYmC0mEhPCOHxlW0CywylOC1u2DFAT+bv4dBw=="[m
+[32m+[m[32m    },[m
+     "react-is": {[m
+       "version": "16.13.1",[m
+       "resolved": "https://registry.npmjs.org/react-is/-/react-is-16.13.1.tgz",[m
+[36m@@ -2511,6 +2558,11 @@[m
+         "setimmediate": "^1.0.4"[m
+       }[m
+     },[m
+[32m+[m[32m    "tiny-warning": {[m
+[32m+[m[32m      "version": "1.0.3",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/tiny-warning/-/tiny-warning-1.0.3.tgz",[m
+[32m+[m[32m      "integrity": "sha512-lBN9zLN/oAf68o3zNXYrdCt1kP8WsiGW8Oo2ka41b2IM5JL/S1CTyX1rW0mb/zSuJun0ZUrDxx4sqvYS2FWzPA=="[m
+[32m+[m[32m    },[m
+     "to-arraybuffer": {[m
+       "version": "1.0.1",[m
+       "resolved": "https://registry.npmjs.org/to-arraybuffer/-/to-arraybuffer-1.0.1.tgz",[m
+[36m@@ -2534,6 +2586,11 @@[m
+       "resolved": "https://registry.npmjs.org/toidentifier/-/toidentifier-1.0.0.tgz",[m
+       "integrity": "sha512-yaOH/Pk/VEhBWWTlhI+qXxDFXlejDGcQipMlyxda9nthulaxLZUNcUqFxokp0vcYnvteJln5FNQDRrxj3YcbVw=="[m
+     },[m
+[32m+[m[32m    "toposort": {[m
+[32m+[m[32m      "version": "2.0.2",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/toposort/-/toposort-2.0.2.tgz",[m
+[32m+[m[32m      "integrity": "sha1-riF2gXXRVZ1IvvNUILL0li8JwzA="[m
+[32m+[m[32m    },[m
+     "tr46": {[m
+       "version": "1.0.1",[m
+       "resolved": "https://registry.npmjs.org/tr46/-/tr46-1.0.1.tgz",[m
+[36m@@ -2547,6 +2604,11 @@[m
+       "resolved": "https://registry.npmjs.org/ts-pnp/-/ts-pnp-1.2.0.tgz",[m
+       "integrity": "sha512-csd+vJOb/gkzvcCHgTGSChYpy5f1/XKNsmvBGO4JXS+z1v2HobugDz4s1IeFXM3wZB44uczs+eazB5Q/ccdhQw=="[m
+     },[m
+[32m+[m[32m    "tslib": {[m
+[32m+[m[32m      "version": "1.14.1",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/tslib/-/tslib-1.14.1.tgz",[m
+[32m+[m[32m      "integrity": "sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg=="[m
+[32m+[m[32m    },[m
+     "tty-browserify": {[m
+       "version": "0.0.0",[m
+       "resolved": "https://registry.npmjs.org/tty-browserify/-/tty-browserify-0.0.0.tgz",[m
+[36m@@ -2698,6 +2760,20 @@[m
+       "version": "0.1.0",[m
+       "resolved": "https://registry.npmjs.org/yocto-queue/-/yocto-queue-0.1.0.tgz",[m
+       "integrity": "sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q=="[m
+[32m+[m[32m    },[m
+[32m+[m[32m    "yup": {[m
+[32m+[m[32m      "version": "0.32.8",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/yup/-/yup-0.32.8.tgz",[m
+[32m+[m[32m      "integrity": "sha512-SZulv5FIZ9d5H99EN5tRCRPXL0eyoYxWIP1AacCrjC9d4DfP13J1dROdKGfpfRHT3eQB6/ikBl5jG21smAfCkA==",[m
+[32m+[m[32m      "requires": {[m
+[32m+[m[32m        "@babel/runtime": "^7.10.5",[m
+[32m+[m[32m        "@types/lodash": "^4.14.165",[m
+[32m+[m[32m        "lodash": "^4.17.20",[m
+[32m+[m[32m        "lodash-es": "^4.17.11",[m
+[32m+[m[32m        "nanoclone": "^0.2.1",[m
+[32m+[m[32m        "property-expr": "^2.0.4",[m
+[32m+[m[32m        "toposort": "^2.0.2"[m
+[32m+[m[32m      }[m
+     }[m
+   }[m
+ }[m
+[1mdiff --git a/package.json b/package.json[m
+[1mindex cb3e386..03d9a75 100644[m
+[1m--- a/package.json[m
+[1m+++ b/package.json[m
+[36m@@ -9,11 +9,13 @@[m
+   },[m
+   "dependencies": {[m
+     "bootstrap": "^4.6.0",[m
+[32m+[m[32m    "formik": "^2.2.6",[m
+     "jquery": "^3.5.1",[m
+     "next": "10.0.6",[m
+     "popper.js": "^1.16.1",[m
+     "react": "17.0.1",[m
+     "react-bootstrap": "^1.4.3",[m
+[31m-    "react-dom": "17.0.1"[m
+[32m+[m[32m    "react-dom": "17.0.1",[m
+[32m+[m[32m    "yup": "^0.32.8"[m
+   }[m
+ }[m
