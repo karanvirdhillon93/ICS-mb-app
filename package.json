@@ -11,6 +11,8 @@
     "bootstrap": "^4.6.0",
     "formik": "^2.2.6",
     "jquery": "^3.5.1",
+    "ky": "^0.25.1",
+    "ky-universal": "^0.8.2",
     "next": "10.0.6",
     "popper.js": "^1.16.1",
     "react": "17.0.1",
