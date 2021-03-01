@@ -9,16 +9,16 @@ import ky from 'ky-universal';
 //. You now need to pass jsonData into the Home Component as props. Use object destructuring
 export async function getStaticProps() {
   let jsonData;
+
   try {
-  jsonData = await ky('http://10.21.75.56:3004/api/messages').json();
- 
+    jsonData = await ky('http://10.21.75.56:3004/api/messages').json(); 
   } catch (err) {
-  console.log('API Error: ' + err);
+    console.log('API Error: ' + err);
   }
   return {
-  props: {
-  jsonData
-  }
+    props: {
+      jsonData
+    }
   }
  }
  /*
@@ -31,7 +31,7 @@ export default function Home({jsonData}) {
     <Col>
       <Container>
         <Header />
-        <MsgBoard MsgItem={jsonData}/>
+        <MsgBoard jsonData={jsonData}/>
         <Footer/>
       </Container>
     </Col>
