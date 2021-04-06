@@ -11,7 +11,7 @@ export async function getStaticProps() {
   let jsonData;
 
   try {
-    jsonData = await ky('http://10.21.75.56:3004/api/messages').json(); 
+    jsonData = await ky(`${process.env.NEXT_PUBLIC_HOST}/api/messages`).json();
   } catch (err) {
     console.log('API Error: ' + err);
   }
