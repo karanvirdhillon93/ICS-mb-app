@@ -14,10 +14,19 @@ const MsgBoard=({jsonData})=>{
   let [messages,setMessages]=useState(jsonData) 
 
   //In AJAX POST Request to your API:
-  const logInUser = (values) => {
+  const logInUser = async (values) => {
     console.log(values);
     // change the state of the boolean state hook (call the updater function)
     setIsLogged(true);
+    try{
+      const isLog = await ky.post(`${process.env.NEXT_PUBLIC_HOST}/api/login`,
+      {
+        json: values
+       }).json();
+       console.log(values);
+    }catch(e){
+      console.log(e);
+    }
    }  
 
   const addNewMessage = async (values) => {
