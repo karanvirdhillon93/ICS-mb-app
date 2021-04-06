@@ -24,16 +24,22 @@ const MsgBoard=({jsonData})=>{
         json: values
        }).json();
        console.log(values);
+       sessionStorage.setItem('token', isLog.token);
     }catch(e){
       console.log(e);
     }
+    
    }  
 
   const addNewMessage = async (values) => {
     try{
       const message = await ky.post(`${process.env.NEXT_PUBLIC_HOST}/api/messages`,
       {
-       json: values
+       json: values,
+       headers: {
+        'Authorization': `Bearer ${sessionStorage.getItem('token')}`
+        }
+       
       }).json();
       console.log(values);
       // values.id = messages.length;
